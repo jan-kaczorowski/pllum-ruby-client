@@ -3,12 +3,12 @@ require_relative "lib/pllum/version"
 Gem::Specification.new do |spec|
   spec.name          = "pllum"
   spec.version       = PLLUM::VERSION
-  spec.authors       = ["Your Name"]
-  spec.email         = ["your.email@example.com"]
+  spec.authors       = ["Jan Kaczorowski"]
+  spec.email         = ["jan.kaczorowski@gmail.com"]
 
   spec.summary       = "Ruby client for the PLLUM AI API"
   spec.description   = "A minimal Ruby client for interacting with the PLLUM AI API - a Polish language model"
-  spec.homepage      = "https://github.com/yourusername/pllum"
+  spec.homepage      = "https://github.com/jan-kaczorowski/pllum-ruby-client"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
 
