@@ -36,7 +36,51 @@ PLLUM.configure do |config|
 end
 ```
 
-### Starting a New Chat
+### Using the Conversation Interface (Recommended)
+
+The Conversation interface provides an easy way to maintain continuous conversations with PLLUM:
+
+```ruby
+require 'pllum'
+
+# Create a new conversation
+conversation = PLLUM.conversation
+
+# Send the first message and stream the response
+conversation.send("Kto jest prezydentem Polski?") do |chunk, metadata, is_end|
+  print chunk unless chunk.nil? || is_end
+end
+
+# Continue the conversation with follow-up questions automatically
+conversation.send("A kto był nim przedtem?") do |chunk, metadata, is_end|
+  print chunk unless chunk.nil? || is_end
+end
+
+# The Conversation class maintains history
+conversation.messages
+# => [{role: "user", content: "Kto jest prezydentem Polski?"}, 
+#     {role: "assistant", content: "Prezydentem Polski jest Andrzej Duda."}, 
+#     {role: "user", content: "A kto był nim przedtem?"}, 
+#     {role: "assistant", content: "Przed Andrzejem Dudą, urząd Prezydenta Rzeczypospolitej Polskiej pełnił Bronisław Komorowski."}]
+
+# Save conversation state for later use
+state = conversation.save_state
+
+# Later, restore the conversation
+restored = PLLUM.conversation
+restored.load_state(state)
+
+# Continue where you left off
+restored.send("Kiedy Andrzej Duda został prezydentem?")
+```
+
+See the `examples/interactive_chat.rb` file for a complete interactive chat application.
+
+### Low-level API (Manual Chat Management)
+
+If you prefer to manage chat state manually, you can use the Client API directly:
+
+#### Starting a New Chat
 
 ```ruby
 require 'pllum'
@@ -54,7 +98,7 @@ end
 # Streaming output: "Prezydentem Polski jest Andrzej Duda."
 ```
 
-### Continuing a Chat
+#### Continuing a Chat
 
 ```ruby
 # Continue the chat with a follow-up question
@@ -88,11 +132,10 @@ client.new_chat(
   auth_mode: false # Override to use no_auth mode for this request
 )
 
-client.continue_chat(
-  chat_id: "67d2fb583cb909b2f5440e22",
-  prompt: "A kto był nim przedtem?",
-  auth_mode: true # Override to use auth mode for this request
-)
+# For the Conversation interface
+conversation = PLLUM.conversation(auth_mode: true)
+# Or override per message
+conversation.send("Kto jest prezydentem Polski?", auth_mode: false)
 ```
 
 ### Additional Parameters
@@ -100,12 +143,37 @@ client.continue_chat(
 You can adjust the model's output by providing these parameters:
 
 ```ruby
+# With Client API
 client.new_chat(
   prompt: "Kto jest prezydentem Polski?",
   model: "pllum-12b-chat",  # Model to use
   temperature: 0.7,         # Controls randomness (0.0 to 1.0)
   top_p: 0.9                # Controls diversity (0.0 to 1.0)
 )
+
+# With Conversation API
+conversation = PLLUM.conversation(
+  model: "pllum-12b-chat",
+  temperature: 0.7,
+  top_p: 0.9
+)
+
+# Or override per message
+conversation.send("Kto jest prezydentem Polski?", temperature: 0.9)
+```
+
+## Examples
+
+The repository includes several example scripts:
+
+- `examples/chat_example.rb`: Basic chat example using the Client API
+- `examples/conversation_example.rb`: Multi-turn conversation example using the Conversation API
+- `examples/interactive_chat.rb`: Interactive CLI chat application with save/load functionality
+
+Run the examples to see PLLUM in action:
+
+```bash
+$ ruby examples/interactive_chat.rb
 ```
 
 ## Development

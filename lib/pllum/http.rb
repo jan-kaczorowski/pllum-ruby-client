@@ -1,5 +1,9 @@
 module PLLUM
   module HTTP
+    # Performs a GET request to the specified path
+    #
+    # @param path [String] The path to request
+    # @return [String, Hash] The parsed response
     def get(path:)
       response = conn.get(uri(path: path)) do |req|
         req.headers = headers
