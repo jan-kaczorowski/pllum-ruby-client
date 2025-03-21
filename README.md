@@ -1,4 +1,4 @@
-# PLLUM Ruby Client
+# PLLuM Ruby Client
 
 A minimal Ruby client for interacting with the [PLLUM](https://pllum.clarin-pl.eu/) Polish language model API.
 
