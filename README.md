@@ -76,10 +76,6 @@ restored.send_message("Kiedy Andrzej Duda został prezydentem?")
 
 See the `examples/interactive_chat.rb` file for a complete interactive chat application.
 
-### Low-level API (Manual Chat Management)
-
-If you prefer to manage chat state manually, you can use the Client API directly:
-
 #### Starting a New Chat
 
 ```ruby
@@ -114,28 +110,6 @@ continue_info = client.continue_chat(
 end
 # Streaming output: "Przed Andrzejem Dudą, urząd Prezydenta Rzeczypospolitej Polskiej pełnił Bronisław Komorowski."
 # Chat complete!
-```
-
-### Auth Mode
-
-PLLUM API supports two modes: `auth` and `no_auth`. You can configure the default mode globally or override it per request:
-
-```ruby
-# Set globally
-PLLUM.configure do |config|
-  config.auth_mode = true # Use auth mode by default
-end
-
-# Override per request
-client.new_chat(
-  prompt: "Kto jest prezydentem Polski?",
-  auth_mode: false # Override to use no_auth mode for this request
-)
-
-# For the Conversation interface
-conversation = PLLUM.conversation(auth_mode: true)
-# Or override per message
-conversation.send_message("Kto jest prezydentem Polski?", auth_mode: false)
 ```
 
 ### Additional Parameters
