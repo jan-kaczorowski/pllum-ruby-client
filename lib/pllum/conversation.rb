@@ -21,7 +21,7 @@ module PLLUM
       @history = []
       @config = {
         auth_mode: options[:auth_mode],
-        model: options[:model] || "pllum-12b-chat",
+        model: options[:model] || 'pllum-12b-chat',
         temperature: options[:temperature] || 0.5,
         top_p: options[:top_p] || 0.5
       }
@@ -37,114 +37,124 @@ module PLLUM
     # @option options [Float] :top_p Override top_p for this request
     # @param block [Block] Optional block for streaming response handling
     # @return [String] The AI's response text
-    def send(message, **options, &block)
+    def send_message(message, **options, &block)
       request_options = @config.merge(options)
-      
-      # If we already have a chat_id, continue the chat
+      response_info = make_api_request(message, request_options, &block)
+      update_conversation_state(response_info)
+
+      response_text = block_given? ? 
+        capture_streaming_response(message, request_options, &block) : 
+        fetch_response_directly(request_options)
+
+      update_history(message, response_text)
+      response_text
+    end
+
+    # Alias for backward compatibility
+    alias send send_message
+
+    private
+
+    # Makes the initial API request to either continue or start a chat
+    def make_api_request(message, request_options, &block)
       if @chat_id
-        response_info = @client.continue_chat(
-          chat_id: @chat_id,
-          prompt: message,
-          model: request_options[:model],
-          temperature: request_options[:temperature],
-          top_p: request_options[:top_p],
-          auth_mode: request_options[:auth_mode],
-          &block
-        )
+        continue_existing_chat(message, request_options, &block)
       else
-        # Otherwise, start a new chat
-        response_info = @client.new_chat(
-          prompt: message,
-          model: request_options[:model],
-          temperature: request_options[:temperature],
-          top_p: request_options[:top_p],
-          auth_mode: request_options[:auth_mode],
-          &block
-        )
+        start_new_chat(message, request_options, &block)
       end
-      
-      # Update conversation state
+    end
+
+    # Start a new chat with the PLLUM API
+    def start_new_chat(message, request_options, &block)
+      @client.new_chat(
+        prompt: message,
+        model: request_options[:model],
+        temperature: request_options[:temperature],
+        top_p: request_options[:top_p],
+        auth_mode: request_options[:auth_mode],
+        &block
+      )
+    end
+
+    # Continue an existing chat with the PLLUM API
+    def continue_existing_chat(message, request_options, &block)
+      @client.continue_chat(
+        chat_id: @chat_id,
+        prompt: message,
+        model: request_options[:model],
+        temperature: request_options[:temperature],
+        top_p: request_options[:top_p],
+        auth_mode: request_options[:auth_mode],
+        &block
+      )
+    end
+
+    # Updates the conversation state with new chat_id and log_id
+    def update_conversation_state(response_info)
       @chat_id = response_info[:chat_id]
       @log_id = response_info[:log_id]
+    end
+
+    # Captures the full response when streaming is enabled
+    def capture_streaming_response(message, request_options, &original_block)
+      response_text = ''
+      wrapper_block = create_wrapper_block(response_text, &original_block)
       
-      # Add to history - we'll collect the response in streaming mode
-      # or non-streaming mode based on the block
-      response_text = ""
-      if block_given?
-        # If we used streaming, we need to create a wrapper block to capture the text
-        wrapper_block = ->(chunk, metadata = nil, is_end = false) {
-          if is_end
-            # End event - do nothing with metadata here
-          else
-            # Content chunk
-            unless chunk.nil?
-              response_text += chunk.to_s
-              yield(chunk, metadata, is_end) # Pass to original block
-            end
-          end
-        }
-        
-        # Re-call the API with our wrapper block
-        if @chat_id && @log_id != 0
-          @client.continue_chat(
-            chat_id: @chat_id,
-            prompt: message,
-            model: request_options[:model],
-            temperature: request_options[:temperature],
-            top_p: request_options[:top_p],
-            auth_mode: request_options[:auth_mode],
-            &wrapper_block
-          )
-        else
-          @client.new_chat(
-            prompt: message,
-            model: request_options[:model],
-            temperature: request_options[:temperature],
-            top_p: request_options[:top_p],
-            auth_mode: request_options[:auth_mode],
-            &wrapper_block
-          )
-        end
+      if @chat_id && @log_id != 0
+        continue_existing_chat(message, request_options, &wrapper_block)
       else
-        # For non-streaming mode, we need to manually get the response
-        auth_part = request_options[:auth_mode] ? "pllum_12b_auth" : "pllum_12b_no_auth"
-        if @chat_id && @log_id != 0
-          path = "/api/v1/#{auth_part}/stream/to_chat/#{@chat_id}/#{@log_id}"
-        else
-          path = "/api/v1/#{auth_part}/stream/new_chat/#{@chat_id}/#{@log_id}"
-        end
-        response_text = @client.get(path: path)
+        start_new_chat(message, request_options, &wrapper_block)
       end
-      
-      # Add message and response to history
-      @history << { role: "user", content: message }
-      @history << { role: "assistant", content: response_text }
       
       response_text
     end
-    
+
+    # Creates a wrapper block that captures the text while passing chunks to the original block
+    def create_wrapper_block(response_text)
+      lambda do |chunk, metadata = nil, is_end = false|
+        unless is_end || chunk.nil?
+          response_text << chunk.to_s
+          yield(chunk, metadata, is_end) # Pass to original block
+        end
+      end
+    end
+
+    # Fetches the response directly for non-streaming mode
+    def fetch_response_directly(request_options)
+      auth_part = request_options[:auth_mode] ? 'pllum_12b_auth' : 'pllum_12b_no_auth'
+      endpoint = @chat_id && @log_id != 0 ? 'to_chat' : 'new_chat'
+      path = "/api/v1/#{auth_part}/stream/#{endpoint}/#{@chat_id}/#{@log_id}"
+      @client.get(path: path)
+    end
+
+    # Updates the conversation history with the user message and AI response
+    def update_history(message, response_text)
+      @history << { role: 'user', content: message }
+      @history << { role: 'assistant', content: response_text }
+    end
+
     # Get the entire conversation history
     #
     # @return [Array<Hash>] The conversation history with role and content keys
     def messages
       @history
     end
-    
+
     # Get the latest assistant response
     #
     # @return [String] The last assistant response or nil if none exists
     def last_response
-      last_assistant_message = @history.select { |msg| msg[:role] == "assistant" }.last
+      last_assistant_message = @history.select { |msg| msg[:role] == 'assistant' }.last
       last_assistant_message ? last_assistant_message[:content] : nil
     end
-    
+
     # Reset the conversation by clearing history and IDs
     def reset
       @chat_id = nil
       @log_id = nil
       @history = []
     end
-    
+
     # Save conversation state to a hash
     #
     # @return [Hash] The conversation state
@@ -156,13 +166,13 @@ module PLLUM
         config: @config
       }
     end
-    
+
     # Load conversation state from a hash
     #
     # @param state [Hash] The conversation state to load
     def load_state(state)
       @chat_id = state[:chat_id]
-      @log_id = state[:log_id] 
+      @log_id = state[:log_id]
       @history = state[:history] || []
       @config = state[:config] || @config
     end

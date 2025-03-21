@@ -3,13 +3,13 @@
 
 require_relative '../lib/pllum'
 
-puts "===== PLLUM Conversation Test ====="
+puts '===== PLLUM Conversation Test ====='
 
 # Create a new conversation
 conversation = PLLUM::Conversation.new
 
 # Test the methods
-puts "Testing conversation methods:"
+puts 'Testing conversation methods:'
 puts "- chat_id: #{conversation.chat_id.inspect}"
 puts "- log_id: #{conversation.log_id.inspect}"
 puts "- history: #{conversation.history.inspect}"

@@ -2,7 +2,11 @@ module PLLUM
   class Client
     include PLLUM::HTTP
 
+    DEFAULT_MODEL = 'pllum-12b-chat'.freeze
+    DEFAULT_TEMPERATURE = 0.5
+    DEFAULT_TOP_P = 0.5
     CONFIG_KEYS = %i[uri_base request_timeout auth_mode].freeze
+
     attr_reader(*CONFIG_KEYS)
 
     def initialize(config = {})
@@ -33,7 +37,12 @@ module PLLUM
     #   client.new_chat(prompt: "Kto jest prezydentem Polski?") do |chunk|
     #     print chunk unless chunk.nil?
     #   end
-    def new_chat(prompt:, model: 'pllum-12b-chat', temperature: 0.5, top_p: 0.5, auth_mode: nil, &block)
+    def new_chat(prompt:,
+                 model: DEFAULT_MODEL,
+                 temperature: DEFAULT_TEMPERATURE,
+                 top_p: DEFAULT_TOP_P,
+                 auth_mode: nil,
+                 &block)
       parameters = {
         prompt: prompt,
         model: model,
@@ -52,7 +61,8 @@ module PLLUM
 
       # Second request to stream the response
       if block_given?
-        stream_get(path: "/api/v1/#{auth_part}/stream/new_chat/#{chat_id}/#{log_id}", handler: block)
+        stream_get(path: "/api/v1/#{auth_part}/stream/new_chat/#{chat_id}/#{log_id}",
+                   handler: block)
       else
         get(path: "/api/v1/#{auth_part}/stream/new_chat/#{chat_id}/#{log_id}")
       end
@@ -85,7 +95,12 @@ module PLLUM
     #       print chunk unless chunk.nil?
     #     end
     #   end
-    def continue_chat(chat_id:, prompt:, model: 'pllum-12b-chat', temperature: 0.5, top_p: 0.5, auth_mode: nil, &block)
+    def continue_chat(chat_id:,
+                      prompt:,
+                      model: DEFAULT_MODEL,
+                      temperature: DEFAULT_TEMPERATURE,
+                      top_p: DEFAULT_TOP_P,
+                      auth_mode: nil, &block)
       parameters = {
         prompt: prompt,
         model: model,

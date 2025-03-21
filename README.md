@@ -47,12 +47,12 @@ require 'pllum'
 conversation = PLLUM.conversation
 
 # Send the first message and stream the response
-conversation.send("Kto jest prezydentem Polski?") do |chunk, metadata, is_end|
+conversation.send_message("Kto jest prezydentem Polski?") do |chunk, metadata, is_end|
   print chunk unless chunk.nil? || is_end
 end
 
 # Continue the conversation with follow-up questions automatically
-conversation.send("A kto był nim przedtem?") do |chunk, metadata, is_end|
+conversation.send_message("A kto był nim przedtem?") do |chunk, metadata, is_end|
   print chunk unless chunk.nil? || is_end
 end
 
@@ -71,7 +71,7 @@ restored = PLLUM.conversation
 restored.load_state(state)
 
 # Continue where you left off
-restored.send("Kiedy Andrzej Duda został prezydentem?")
+restored.send_message("Kiedy Andrzej Duda został prezydentem?")
 ```
 
 See the `examples/interactive_chat.rb` file for a complete interactive chat application.
@@ -135,7 +135,7 @@ client.new_chat(
 # For the Conversation interface
 conversation = PLLUM.conversation(auth_mode: true)
 # Or override per message
-conversation.send("Kto jest prezydentem Polski?", auth_mode: false)
+conversation.send_message("Kto jest prezydentem Polski?", auth_mode: false)
 ```
 
 ### Additional Parameters
@@ -159,7 +159,7 @@ conversation = PLLUM.conversation(
 )
 
 # Or override per message
-conversation.send("Kto jest prezydentem Polski?", temperature: 0.9)
+conversation.send_message("Kto jest prezydentem Polski?", temperature: 0.9)
 ```
 
 ## Examples

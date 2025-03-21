@@ -3,14 +3,14 @@ require_relative 'lib/pllum/version'
 Gem::Specification.new do |spec|
   spec.name          = 'pllum'
   spec.version       = PLLUM::VERSION
-  spec.authors       = ["Jan Kaczorowski"]
-  spec.email         = ["jan.kaczorowski@gmail.com"]
+  spec.authors       = ['Jan Kaczorowski']
+  spec.email         = ['jan.kaczorowski@gmail.com']
 
-  spec.summary       = "Ruby client for the PLLUM AI API"
-  spec.description   = "A minimal Ruby client for interacting with the PLLUM AI API - a Polish language model"
-  spec.homepage      = "https://github.com/jan-kaczorowski/pllum-ruby-client"
-  spec.license       = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.summary       = 'Ruby client for the PLLUM AI API'
+  spec.description   = 'A minimal Ruby client for interacting with the PLLUM AI API - a Polish language model'
+  spec.homepage      = 'https://github.com/jan-kaczorowski/pllum-ruby-client'
+  spec.license       = 'MIT'
+  spec.required_ruby_version = '>= 2.6.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
@@ -24,4 +24,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

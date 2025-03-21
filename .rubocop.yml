@@ -20,6 +20,20 @@ Lint/AmbiguousOperator:
 Metrics/AbcSize:
   Max: 20
 
+Metrics/PerceivedComplexity:
+  Max: 20
+
+Metrics/CyclomaticComplexity:
+  Max: 20
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/ClassLength:
+  Max: 120
 
 Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
   Enabled: false
