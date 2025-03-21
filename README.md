@@ -64,7 +64,7 @@ conversation.messages
 #     {role: "assistant", content: "Przed Andrzejem Dudą, urząd Prezydenta Rzeczypospolitej Polskiej pełnił Bronisław Komorowski."}]
 
 # Save conversation state for later use
-state = conversation.save_state
+state = conversation.state_info
 
 # Later, restore the conversation
 restored = PLLUM.conversation

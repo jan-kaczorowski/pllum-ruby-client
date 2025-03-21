@@ -16,7 +16,7 @@ puts "- history: #{conversation.history.inspect}"
 puts "- config: #{conversation.config.inspect}"
 
 # Try saving and loading state
-state = conversation.save_state
+state = conversation.state_info
 puts "\nSaved state: #{state.inspect}"
 
 # Reset and load

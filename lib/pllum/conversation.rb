@@ -39,19 +39,69 @@ module PLLUM
     # @return [String] The AI's response text
     def send_message(message, **options, &block)
       request_options = @config.merge(options)
-      response_info = make_api_request(message, request_options, &block)
+      response_text = ''
+
+      if block_given?
+        # For streaming, we need to capture the text while yielding chunks
+        wrapper_block = create_wrapper_block(response_text, &block)
+        response_info = make_api_request(message, request_options, &wrapper_block)
+      else
+        # For non-streaming mode, make request and then fetch the response
+        response_info = make_api_request(message, request_options)
+        response_text = fetch_response_directly(request_options)
+      end
+
       update_conversation_state(response_info)
-
-      response_text = block_given? ? 
-        capture_streaming_response(message, request_options, &block) : 
-        fetch_response_directly(request_options)
-
       update_history(message, response_text)
       response_text
     end
 
     # Alias for backward compatibility
     alias send send_message
+
+    # Get the entire conversation history
+    #
+    # @return [Array<Hash>] The conversation history with role and content keys
+    def messages
+      @history
+    end
+
+    # Get the latest assistant response
+    #
+    # @return [String] The last assistant response or nil if none exists
+    def last_response
+      last_assistant_message = @history.select { |msg| msg[:role] == 'assistant' }.last
+      last_assistant_message ? last_assistant_message[:content] : nil
+    end
+
+    # Get conversation state info as hash
+    #
+    # @return [Hash] The conversation state
+    def state_info
+      {
+        chat_id: @chat_id,
+        log_id: @log_id,
+        history: @history,
+        config: @config
+      }
+    end
+
+    # Reset the conversation by clearing history and IDs
+    def reset
+      @chat_id = nil
+      @log_id = nil
+      @history = []
+    end
+
+    # Load conversation state from a hash
+    #
+    # @param state [Hash] The conversation state to load
+    def load_state(state)
+      @chat_id = state[:chat_id]
+      @log_id = state[:log_id]
+      @history = state[:history] || []
+      @config = state[:config] || @config
+    end
 
     private
 
@@ -95,20 +145,6 @@ module PLLUM
       @log_id = response_info[:log_id]
     end
 
-    # Captures the full response when streaming is enabled
-    def capture_streaming_response(message, request_options, &original_block)
-      response_text = ''
-      wrapper_block = create_wrapper_block(response_text, &original_block)
-      
-      if @chat_id && @log_id != 0
-        continue_existing_chat(message, request_options, &wrapper_block)
-      else
-        start_new_chat(message, request_options, &wrapper_block)
-      end
-      
-      response_text
-    end
-
     # Creates a wrapper block that captures the text while passing chunks to the original block
     def create_wrapper_block(response_text)
       lambda do |chunk, metadata = nil, is_end = false|
@@ -131,50 +167,6 @@ module PLLUM
     def update_history(message, response_text)
       @history << { role: 'user', content: message }
       @history << { role: 'assistant', content: response_text }
-    end
-
-    # Get the entire conversation history
-    #
-    # @return [Array<Hash>] The conversation history with role and content keys
-    def messages
-      @history
-    end
-
-    # Get the latest assistant response
-    #
-    # @return [String] The last assistant response or nil if none exists
-    def last_response
-      last_assistant_message = @history.select { |msg| msg[:role] == 'assistant' }.last
-      last_assistant_message ? last_assistant_message[:content] : nil
-    end
-
-    # Reset the conversation by clearing history and IDs
-    def reset
-      @chat_id = nil
-      @log_id = nil
-      @history = []
-    end
-
-    # Save conversation state to a hash
-    #
-    # @return [Hash] The conversation state
-    def save_state
-      {
-        chat_id: @chat_id,
-        log_id: @log_id,
-        history: @history,
-        config: @config
-      }
-    end
-
-    # Load conversation state from a hash
-    #
-    # @param state [Hash] The conversation state to load
-    def load_state(state)
-      @chat_id = state[:chat_id]
-      @log_id = state[:log_id]
-      @history = state[:history] || []
-      @config = state[:config] || @config
     end
   end
 end

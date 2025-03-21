@@ -12,10 +12,9 @@ Layout/LineLength:
   Exclude:
     - "**/*.gemspec"
 
-Lint/AmbiguousOperator:
-  # https://github.com/rubocop/rubocop/issues/4294
+Metrics/ModuleLength:
   Exclude:
-    - "lib/openai/client.rb"
+    - "lib/pllum/http.rb"
 
 Metrics/AbcSize:
   Max: 20
@@ -37,3 +36,6 @@ Style/FrozenStringLiteralComment:
 
 Gemspec/DevelopmentDependencies:
   Enabled: false
+
+Metrics/ParameterLists:
+  Max: 6

@@ -1,6 +1,7 @@
 require 'faraday'
 require 'json'
 require 'event_stream_parser'
+require 'debug'
 
 require_relative 'pllum/version'
 require_relative 'pllum/configuration'

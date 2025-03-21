@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Interactive CLI chat with PLLUM AI using the Conversation class
 
-require 'pllum'
+require_relative '../lib/pllum'
 require 'json'
 require 'fileutils'
 
@@ -55,7 +55,7 @@ def save_conversation(conversation)
   filename = "pllum_chat_#{Time.now.strftime('%Y%m%d_%H%M%S')}.json"
   path = File.join(SAVE_DIR, filename)
 
-  state = conversation.save_state
+  state = conversation.state_info
   File.write(path, JSON.pretty_generate(state))
 
   puts "Conversation saved to #{path}".green

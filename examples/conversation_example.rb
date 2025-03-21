@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Example of using the PLLUM Ruby client with the Conversation class for continuous chat
 
-require 'pllum'
+require_relative '../lib/pllum'
 
 # Configure the client (optional)
 PLLUM.configure do |config|
@@ -44,7 +44,7 @@ conversation.messages.each do |message|
 end
 
 # Save conversation state
-state = conversation.save_state
+state = conversation.state_info
 puts "\nSaved conversation state with chat_id: #{state[:chat_id]}"
 
 # Create a new conversation with the saved state
