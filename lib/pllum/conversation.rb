@@ -21,9 +21,9 @@ module PLLUM
       @history = []
       @config = {
         auth_mode: options[:auth_mode],
-        model: options[:model] || 'pllum-12b-chat',
-        temperature: options[:temperature] || 0.5,
-        top_p: options[:top_p] || 0.5
+        model: options[:model] || PLLUM::Client::DEFAULT_MODEL,
+        temperature: options[:temperature] || PLLUM::Client::DEFAULT_TEMPERATURE,
+        top_p: options[:top_p] || PLLUM::Client::DEFAULT_TOP_P
       }
     end
 
