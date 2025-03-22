@@ -2,7 +2,7 @@ module PLLUM
   class Configuration
     attr_accessor :uri_base, :request_timeout, :auth_mode
 
-    DEFAULT_URI_BASE = 'https://pllum.clarin-pl.eu'.freeze
+    DEFAULT_URI_BASE = "https://pllum.clarin-pl.eu".freeze
     DEFAULT_REQUEST_TIMEOUT = 120
     DEFAULT_AUTH_MODE = false
 

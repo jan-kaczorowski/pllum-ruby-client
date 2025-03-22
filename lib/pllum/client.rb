@@ -2,7 +2,7 @@ module PLLUM
   class Client
     include PLLUM::HTTP
 
-    DEFAULT_MODEL = 'pllum-12b-chat'.freeze
+    DEFAULT_MODEL = "pllum-12b-chat".freeze
     DEFAULT_TEMPERATURE = 0.5
     DEFAULT_TOP_P = 0.5
     CONFIG_KEYS = %i[uri_base request_timeout auth_mode].freeze
@@ -52,12 +52,12 @@ module PLLUM
 
       # Determine which auth mode to use
       use_auth = auth_mode.nil? ? @auth_mode : auth_mode
-      auth_part = use_auth ? 'pllum_12b_auth' : 'pllum_12b_no_auth'
+      auth_part = use_auth ? "pllum_12b_auth" : "pllum_12b_no_auth"
 
       # First request to start chat and get chat_id
       response = json_post(path: "/api/v1/#{auth_part}/stream/new_chat/", parameters: parameters)
-      chat_id = response['chat_id']
-      log_id = response['log_id']
+      chat_id = response["chat_id"]
+      log_id = response["log_id"]
 
       # Second request to stream the response
       if block_given?
@@ -111,11 +111,11 @@ module PLLUM
 
       # Determine which auth mode to use
       use_auth = auth_mode.nil? ? @auth_mode : auth_mode
-      auth_part = use_auth ? 'pllum_12b_auth' : 'pllum_12b_no_auth'
+      auth_part = use_auth ? "pllum_12b_auth" : "pllum_12b_no_auth"
 
       # First request to continue chat and get updated log_id
       response = json_post(path: "/api/v1/#{auth_part}/stream/to_chat/", parameters: parameters)
-      log_id = response['log_id']
+      log_id = response["log_id"]
 
       # Second request to stream the response
       if block_given?

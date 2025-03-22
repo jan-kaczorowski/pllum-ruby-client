@@ -1,13 +1,13 @@
-require 'faraday'
-require 'json'
-require 'event_stream_parser'
-require 'debug'
+require "faraday"
+require "json"
+require "event_stream_parser"
+require "debug"
 
-require_relative 'pllum/version'
-require_relative 'pllum/configuration'
-require_relative 'pllum/http'
-require_relative 'pllum/client'
-require_relative 'pllum/conversation'
+require_relative "pllum/version"
+require_relative "pllum/configuration"
+require_relative "pllum/http"
+require_relative "pllum/client"
+require_relative "pllum/conversation"
 
 module PLLUM
   class Error < StandardError; end

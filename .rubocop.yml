@@ -60,12 +60,15 @@ Metrics/BlockLength:
 # RSpec specific
 RSpec/ExampleLength:
   Max: 15
-  
+
 RSpec/MultipleMemoizedHelpers:
   Max: 10
-  
+
 RSpec/NestedGroups:
   Max: 4
 
 RSpec/MessageSpies:
   EnforcedStyle: receive
+
+RSpec/MultipleExpectations:
+  Enabled: false

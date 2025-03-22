@@ -3,13 +3,13 @@ require "spec_helper"
 RSpec.describe PLLUM do
   describe ".VERSION" do
     it "has a version number" do
-      expect(PLLUM::VERSION).not_to be nil
+      expect(PLLUM::VERSION).not_to be_nil
     end
   end
 
   describe ".conversation" do
     it "creates a new conversation instance" do
-      conversation = PLLUM.conversation
+      conversation = described_class.conversation
       expect(conversation).to be_a(PLLUM::Conversation)
     end
 
@@ -18,7 +18,7 @@ RSpec.describe PLLUM do
       temperature = 0.8
       auth_mode = true
 
-      conversation = PLLUM.conversation(
+      conversation = described_class.conversation(
         model: model,
         temperature: temperature,
         auth_mode: auth_mode
@@ -41,30 +41,30 @@ RSpec.describe PLLUM do
   describe "configuration" do
     after do
       # Reset to defaults
-      PLLUM.configuration = PLLUM::Configuration.new
+      described_class.configuration = PLLUM::Configuration.new
     end
 
     it "returns a default configuration when not explicitly set" do
-      config = PLLUM.configuration
+      config = described_class.configuration
       expect(config).to be_a(PLLUM::Configuration)
       expect(config.uri_base).to eq(PLLUM::Configuration::DEFAULT_URI_BASE)
     end
 
     it "uses the configured values" do
       custom_uri = "https://custom.example.com"
-      PLLUM.configure do |config|
+      described_class.configure do |config|
         config.uri_base = custom_uri
       end
 
-      expect(PLLUM.configuration.uri_base).to eq(custom_uri)
+      expect(described_class.configuration.uri_base).to eq(custom_uri)
     end
 
     it "allows direct setting of the configuration" do
       custom_config = PLLUM::Configuration.new
       custom_config.request_timeout = 300
 
-      PLLUM.configuration = custom_config
-      expect(PLLUM.configuration.request_timeout).to eq(300)
+      described_class.configuration = custom_config
+      expect(described_class.configuration.request_timeout).to eq(300)
     end
   end
 end

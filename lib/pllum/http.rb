@@ -13,7 +13,7 @@ module PLLUM
 
     def json_post(path:, parameters:)
       response = conn.post(uri(path: path)) do |req|
-        req.headers = headers.merge({ 'Content-Type' => 'application/json; charset=UTF-8' })
+        req.headers = headers.merge({ "Content-Type" => "application/json; charset=UTF-8" })
         req.body = parameters.to_json
       end
       parse_json(response.body)
@@ -21,7 +21,7 @@ module PLLUM
 
     def stream_get(path:, handler:)
       parser = EventStreamParser::Parser.new
-      buffer = ''
+      buffer = ""
 
       conn.get(uri(path: path)) do |req|
         req.headers = streaming_headers
@@ -36,8 +36,8 @@ module PLLUM
 
     def streaming_headers
       headers.merge({
-                      'Accept' => '*/*',
-                      'Accept-Charset' => 'UTF-8'
+                      "Accept" => "*/*",
+                      "Accept-Charset" => "UTF-8"
                     })
     end
 
@@ -59,16 +59,16 @@ module PLLUM
     end
 
     def ensure_utf8(text)
-      text.respond_to?(:force_encoding) ? text.force_encoding('UTF-8') : text
+      text.respond_to?(:force_encoding) ? text.force_encoding("UTF-8") : text
     end
 
     def handle_event(event_type, data, handler)
       data = ensure_utf8(data)
 
       case event_type
-      when 'new_message'
+      when "new_message"
         handler.call(data) unless data.empty?
-      when 'end_event'
+      when "end_event"
         process_end_event(data, handler)
       end
     end
@@ -88,9 +88,9 @@ module PLLUM
 
     def convert_python_to_json(data)
       data.gsub("'", '"')
-          .gsub(/\bTrue\b/, 'true')
-          .gsub(/\bFalse\b/, 'false')
-          .gsub(/\bNone\b/, 'null')
+          .gsub(/\bTrue\b/, "true")
+          .gsub(/\bFalse\b/, "false")
+          .gsub(/\bNone\b/, "null")
     end
 
     def extract_fallback_data(data, handler)
@@ -98,22 +98,22 @@ module PLLUM
       log_id_match = data.match(/'log_id':\s*'([^']+)'/)
 
       fallback_data = {
-        'chat_id' => chat_id_match ? chat_id_match[1] : nil,
-        'log_id' => log_id_match ? log_id_match[1] : nil,
-        'raw_data' => data
+        "chat_id" => chat_id_match ? chat_id_match[1] : nil,
+        "log_id" => log_id_match ? log_id_match[1] : nil,
+        "raw_data" => data
       }
 
       handler.call(nil, fallback_data, true)
     rescue StandardError => e
       puts "Warning: Could not extract data with regex: #{e.message}"
-      handler.call(nil, { 'raw_data' => data }, true)
+      handler.call(nil, { "raw_data" => data }, true)
     end
 
     def handle_parser_error(error, chunk, buffer, handler)
       puts "Warning: Error parsing stream data: #{error.message}"
       buffer << chunk
 
-      if buffer.include?('event: end_event')
+      if buffer.include?("event: end_event")
         process_buffered_end_event(buffer, handler)
       else
         process_buffered_message(buffer, handler)
@@ -134,7 +134,7 @@ module PLLUM
           process_end_event_fallback(end_data, buffer, handler)
         end
       else
-        handler.call(nil, { 'raw_data' => buffer }, true)
+        handler.call(nil, { "raw_data" => buffer }, true)
         buffer.clear
       end
     rescue StandardError => e
@@ -147,9 +147,9 @@ module PLLUM
       log_id_match = end_data.match(/'log_id':\s*'([^']+)'/)
 
       fallback_data = {
-        'chat_id' => chat_id_match ? chat_id_match[1] : nil,
-        'log_id' => log_id_match ? log_id_match[1] : nil,
-        'raw_data' => end_data
+        "chat_id" => chat_id_match ? chat_id_match[1] : nil,
+        "log_id" => log_id_match ? log_id_match[1] : nil,
+        "raw_data" => end_data
       }
 
       handler.call(nil, fallback_data, true)
@@ -168,7 +168,7 @@ module PLLUM
       return unless response
 
       # Ensure the response is UTF-8 encoded
-      response = response.force_encoding('UTF-8') if response.respond_to?(:force_encoding)
+      response = response.force_encoding("UTF-8") if response.respond_to?(:force_encoding)
 
       JSON.parse(response)
     rescue JSON::ParserError
@@ -193,12 +193,12 @@ module PLLUM
 
     def headers
       {
-        'Accept' => 'application/json',
-        'Accept-Language' => 'pl',
-        'Cache-Control' => 'no-cache',
-        'Origin' => PLLUM.configuration.uri_base,
-        'Pragma' => 'no-cache',
-        'Content-Type' => 'application/json; charset=UTF-8'
+        "Accept" => "application/json",
+        "Accept-Language" => "pl",
+        "Cache-Control" => "no-cache",
+        "Origin" => PLLUM.configuration.uri_base,
+        "Pragma" => "no-cache",
+        "Content-Type" => "application/json; charset=UTF-8"
       }
     end
   end

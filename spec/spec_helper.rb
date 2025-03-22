@@ -29,7 +29,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     FactoryBot.find_definitions
   end
-  
+
   # Configure VCR to ignore integration tests by default
   config.before(:all, :integration) do
     WebMock.allow_net_connect!
@@ -38,9 +38,9 @@ RSpec.configure do |config|
   config.after(:all, :integration) do
     WebMock.disable_net_connect!
   end
-  
+
   # Reset the PLLUM configuration between tests
-  config.after(:each) do
+  config.after do
     PLLUM.configuration = PLLUM::Configuration.new
   end
 end

@@ -21,3 +21,5 @@ gem "debug", "~> 1.10"
 gem "factory_bot", "~> 6.5"
 
 gem "webmock", "~> 3.25"
+
+gem "rubocop-rspec", "~> 3.5"

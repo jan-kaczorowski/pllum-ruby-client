@@ -23,7 +23,7 @@ task :spec_integration do
 end
 
 desc "Run linting with RuboCop"
-task :lint => :rubocop
+task lint: :rubocop
 
 desc "Run all tests and linting"
-task :default => [:spec, :lint]
+task default: %i[spec lint]

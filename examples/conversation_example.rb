@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Example of using the PLLUM Ruby client with the Conversation class for continuous chat
 
-require_relative '../lib/pllum'
+require_relative "../lib/pllum"
 
 # Configure the client (optional)
 PLLUM.configure do |config|
@@ -9,8 +9,8 @@ PLLUM.configure do |config|
   config.auth_mode = false     # Default is no_auth mode
 end
 
-puts 'PLLUM Conversation Example'
-puts '=========================='
+puts "PLLUM Conversation Example"
+puts "=========================="
 puts
 
 # Create a new conversation
@@ -28,17 +28,17 @@ def stream_response(conversation, message)
 end
 
 # Start conversation with an initial question
-stream_response(conversation, 'Kto jest prezydentem Polski?')
+stream_response(conversation, "Kto jest prezydentem Polski?")
 
 # Continue with follow-up questions
-stream_response(conversation, 'A kto był nim przedtem?')
-stream_response(conversation, 'Wymień jeszcze kilku poprzednich prezydentów.')
+stream_response(conversation, "A kto był nim przedtem?")
+stream_response(conversation, "Wymień jeszcze kilku poprzednich prezydentów.")
 
 # Show conversation history
-puts 'Conversation History:'
-puts '===================='
+puts "Conversation History:"
+puts "===================="
 conversation.messages.each do |message|
-  role = message[:role] == 'user' ? 'You' : 'PLLUM'
+  role = message[:role] == "user" ? "You" : "PLLUM"
   content = message[:content]
   puts "#{role}: #{content}"
 end
@@ -53,6 +53,6 @@ restored_conversation = PLLUM.conversation
 restored_conversation.load_state(state)
 
 # Continue the conversation from where we left off
-stream_response(restored_conversation, 'Kiedy Andrzej Duda został prezydentem?')
+stream_response(restored_conversation, "Kiedy Andrzej Duda został prezydentem?")
 
-puts 'Conversation completed!'
+puts "Conversation completed!"

@@ -39,7 +39,7 @@ module PLLUM
     # @return [String] The AI's response text
     def send_message(message, **options, &block)
       request_options = @config.merge(options)
-      response_text = ''
+      response_text = ""
 
       if block_given?
         # For streaming, we need to capture the text while yielding chunks
@@ -70,7 +70,7 @@ module PLLUM
     #
     # @return [String] The last assistant response or nil if none exists
     def last_response
-      last_assistant_message = @history.select { |msg| msg[:role] == 'assistant' }.last
+      last_assistant_message = @history.select { |msg| msg[:role] == "assistant" }.last
       last_assistant_message ? last_assistant_message[:content] : nil
     end
 
@@ -157,16 +157,16 @@ module PLLUM
 
     # Fetches the response directly for non-streaming mode
     def fetch_response_directly(request_options)
-      auth_part = request_options[:auth_mode] ? 'pllum_12b_auth' : 'pllum_12b_no_auth'
-      endpoint = @chat_id && @log_id != 0 ? 'to_chat' : 'new_chat'
+      auth_part = request_options[:auth_mode] ? "pllum_12b_auth" : "pllum_12b_no_auth"
+      endpoint = @chat_id && @log_id != 0 ? "to_chat" : "new_chat"
       path = "/api/v1/#{auth_part}/stream/#{endpoint}/#{@chat_id}/#{@log_id}"
       @client.get(path: path)
     end
 
     # Updates the conversation history with the user message and AI response
     def update_history(message, response_text)
-      @history << { role: 'user', content: message }
-      @history << { role: 'assistant', content: response_text }
+      @history << { role: "user", content: message }
+      @history << { role: "assistant", content: response_text }
     end
   end
 end
