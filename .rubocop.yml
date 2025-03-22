@@ -1,23 +1,34 @@
+require:
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.6
   NewCops: enable
   SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'spec/fixtures/**/*'
 
 Style/Documentation:
   # Skips checking to make sure top level modules / classes have a comment.
   Enabled: false
 
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
 Layout/LineLength:
   Max: 100
   Exclude:
     - "**/*.gemspec"
+    - "spec/**/*"
 
 Metrics/ModuleLength:
   Exclude:
     - "lib/pllum/http.rb"
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 25
 
 Metrics/PerceivedComplexity:
   Max: 20
@@ -26,10 +37,10 @@ Metrics/CyclomaticComplexity:
   Max: 20
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 25
 
 Metrics/ClassLength:
-  Max: 120
+  Max: 150
 
 Style/FrozenStringLiteralComment:
   Enabled: false
@@ -39,3 +50,22 @@ Gemspec/DevelopmentDependencies:
 
 Metrics/ParameterLists:
   Max: 6
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - '*.gemspec'
+    - 'Rakefile'
+
+# RSpec specific
+RSpec/ExampleLength:
+  Max: 15
+  
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+  
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive

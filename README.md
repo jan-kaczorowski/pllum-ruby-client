@@ -154,6 +154,52 @@ $ ruby examples/interactive_chat.rb
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
+### Testing
+
+The gem uses RSpec for testing, with VCR for recording and replaying HTTP interactions and FactoryBot for test data.
+
+```bash
+# Install dependencies
+bundle install
+
+# Run tests (excluding integration tests)
+bundle exec rspec
+
+# Run all tests including integration tests
+bundle exec rake spec_all
+
+# Run only integration tests
+bundle exec rake spec_integration
+
+# Run tests with code coverage
+COVERAGE=true bundle exec rspec
+
+# Run the linter
+bundle exec rake lint
+
+# Run all tests and linting
+bundle exec rake
+```
+
+### Integration Tests
+
+Integration tests are tagged with `:integration` and are skipped by default. These tests make real API requests and require a working internet connection.
+
+To run integration tests, use:
+
+```bash
+bundle exec rspec --tag integration
+```
+
+VCR is configured to record the API interactions during integration tests into the `spec/fixtures/vcr_cassettes` directory. These recordings are used for future test runs, so you only need internet access once.
+
+### Test Structure
+
+- `spec/pllum/` - Unit tests for each component
+- `spec/factories/` - FactoryBot definitions for test objects
+- `spec/integration/` - Integration tests for real API interactions
+- `spec/support/` - Support files for testing (VCR config, etc.)
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
