@@ -70,10 +70,17 @@ RSpec.describe PLLUM::Conversation do
 
       it 'supports streaming mode with a block' do
         chunks = []
-        expect(client).to receive(:new_chat) do |**params, &block|
+        
+        # Properly stub the client's new_chat method to capture and call the block
+        expect(client).to receive(:new_chat) do |*args, **kwargs, &block|
+          # Make sure a block is provided
+          expect(block).to be_a(Proc)
+          
           # Call the provided block to simulate streaming
           block.call("Chunk 1")
           block.call("Chunk 2")
+          
+          # Return the expected result
           chat_info
         end
 
